@@ -4,7 +4,7 @@ A Python app that crawls on the website, gets their data, determines the gender 
 
 ## Lessons Learned
 
-The working process for this poject was enjoyable, because I learned how to use the powerful tool for crawling the web pages (Beautiful Soup) and the very interesting tool known as OpenAI API.
+The working process for this project was enjoyable, because I learned how to use the powerful tool for crawling the web pages (Beautiful Soup) and the very interesting tool known as OpenAI API.
 
 ## Features
 - Crawl the following website: https://www.bdh-online.de/patienten/therapeutensuche/
