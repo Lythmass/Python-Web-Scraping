@@ -1,10 +1,14 @@
 import requests
 from bs4 import BeautifulSoup
 import pandas
+from openai import OpenAI
+from dotenv import load_dotenv
+load_dotenv()
 
 pageOneURL = "https://www.bdh-online.de/patienten/therapeutensuche/"
 pageTwoURL = pageOneURL + "?seite=2"
 people = []
+client = OpenAI()
 
 def ReceiveHTMLFile(url):
   response = requests.get(url)
@@ -17,6 +21,16 @@ def SplitThePersonName(fullName):
   if len(fullName) == 3:
     lastName += ", " + fullName[2]
   return firstName, lastName
+
+def DetermineGender(firstName):
+  response = client.chat.completions.create(
+    model="gpt-3.5-turbo",
+    messages=[
+      {"role": "system", "content": "You determine the gender from names from all countries. Your output answer should be either 'f' or 'm'."},
+      {"role": "user", "content": "What gender is the name '" + firstName + "' associated to?"},
+    ]
+  )
+  return response.choices[0].message.content
 
 def ScrapPeople(url, people):
   soup = ReceiveHTMLFile(url)
@@ -31,12 +45,14 @@ def ScrapPeople(url, people):
     firstName, lastName = SplitThePersonName(personData[0].find("b").getText().split())
     emailRaw = personData[0].find("table").getText()
     email = emailRaw[emailRaw.find("E-Mail") + 6:]
-    people.append([firstName, lastName, zip, ort, email])
+    gender = DetermineGender(firstName)
+    people.append([firstName, lastName, gender, zip, ort, email])
       
   
 
 ScrapPeople(pageOneURL, people)
 ScrapPeople(pageTwoURL, people)
 
-df = pandas.DataFrame(people, columns=["First Name", "Last Name", "PLZ", "Ort", "Email"])
+
+df = pandas.DataFrame(people, columns=["First Name", "Last Name", "Gender", "PLZ", "Ort", "Email"])
 df.to_csv('peopleScraped.csv')
