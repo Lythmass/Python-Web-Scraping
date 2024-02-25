@@ -26,7 +26,7 @@ def DetermineGender(firstName):
   response = client.chat.completions.create(
     model="gpt-3.5-turbo",
     messages=[
-      {"role": "system", "content": "You determine the gender from names from all countries. Your output answer should be either 'f' or 'm'."},
+      {"role": "system", "content": "You determine the gender from names from all countries. Your output answer should ONLY be either 'f' or 'm'. Don't give me any other answer."},
       {"role": "user", "content": "What gender is the name '" + firstName + "' associated to?"},
     ]
   )
@@ -53,6 +53,5 @@ def ScrapPeople(url, people):
 ScrapPeople(pageOneURL, people)
 ScrapPeople(pageTwoURL, people)
 
-
 df = pandas.DataFrame(people, columns=["First Name", "Last Name", "Gender", "PLZ", "Ort", "Email"])
-df.to_csv('peopleScraped.csv')
+df.to_excel('peopleScraped.xlsx')
